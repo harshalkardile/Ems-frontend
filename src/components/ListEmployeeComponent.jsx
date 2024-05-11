@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react'
-import { listEmployees } from '../services/EmployeeService'
+import { deleteEmployee, listEmployees } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
+import { AiTwotoneEdit } from "react-icons/ai";
+import { AiTwotoneDelete } from "react-icons/ai";
 
 
 const ListEmployeeComponent = () => {
@@ -9,15 +11,32 @@ const ListEmployeeComponent = () => {
     const navigator = useNavigate();
     
     useEffect( () => {
+        getAllEmployees();
+    }, [])
+    
+    function getAllEmployees(){  
         listEmployees().then((response)=>{
             setEmployees(response.data)
         }).catch(error => {
             console.error(error);
         })
-    }, [])
+    }
 
     function addNewEmployee(){
         navigator('/add-employee')
+    }
+
+    function updateEmployee(id){
+        navigator(`/edit-employee/${id}`);
+    }
+
+    function removeEmployee(id){
+        console.log(id);
+        deleteEmployee(id).then(() => {
+            getAllEmployees();
+        }).catch(error => {
+            console.error(error);
+        })
     }
     
   return (
@@ -33,6 +52,7 @@ const ListEmployeeComponent = () => {
                    <th className="">Employee First Name </th>
                    <th className="">Employee Last Name</th>
                    <th className="">Employee Email</th>
+                   <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,6 +63,15 @@ const ListEmployeeComponent = () => {
                             <td className="">{employee.firstName}</td>
                             <td className="">{employee.lastName}</td>
                             <td className="">{employee.email}</td>
+                            <td>
+                                <button className='btn btn-info' onClick={() => updateEmployee(employee.id)}>
+                                <AiTwotoneEdit />
+                                </button>
+                                <button className='btn btn-danger mr-5' onClick={() => removeEmployee(employee.id)} style={{marginLeft: '10px'}}>
+                                <AiTwotoneDelete />
+                                </button>
+                            </td>
+                          
                         </tr>
                      ) 
                 }
